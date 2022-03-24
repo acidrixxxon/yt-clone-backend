@@ -25,9 +25,21 @@ const VideoSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Channel'
     },
+    comments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comment'
+      }],
     views: {
         type: Number,
         default: 0,
+    },
+    likes: {
+        type: Number,
+        default: 0
+    },
+    dislikes: {
+        type: Number,
+        default: 0
     },
     duration: {
         type: String,

@@ -5,6 +5,7 @@ import userRouter from './routes/userRouter.js'
 import channelRouter from './routes/channelRouter.js'
 import searchRouter from './routes/searchRouter.js'
 import historyRouter from './routes/historyRouter.js'
+import commentRouter from './routes/commentRouter.js'
 import fileupload from 'express-fileupload'
 import mongoose from 'mongoose'
 import cors from 'cors'
@@ -35,6 +36,7 @@ app.use('/user',userRouter)
 app.use('/channel/',channelRouter)
 app.use('/search',searchRouter)
 app.use('/history',historyRouter)
+app.use('/comment',commentRouter)
 
 app.listen(PORT, () => {
     try {

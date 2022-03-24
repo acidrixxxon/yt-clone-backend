@@ -28,6 +28,14 @@ const userSchema = new mongoose.Schema({
     watchLater: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Video'
+    }],
+    likes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Video'
+    }],
+    dislikes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Video'
     }]
 })
 

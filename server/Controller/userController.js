@@ -13,9 +13,11 @@ class UserController {
             const user = await User.findOne({email}).populate({path: 'subscriptions',select: '-author -subscribers -__v'})
            
             
-            if(!user) return res.status(401).json({message: 'User with same email was not founded in DB!'})
-            const truePassword = bcrypt.compare(password,user.password)
+            if(!user) return res.status(401).json({message: 'Пользователя с таким email не существует!'})
+            const truePassword = await bcrypt.compare(password,user.password)
 
+            if (!truePassword) return res.status(401).json({message: 'Не правильный пароль!',success: false})
+           
 
             if (user && truePassword) {
                 const token = generateToken(user._id)
@@ -24,7 +26,7 @@ class UserController {
                     maxAge: 3600 * 24
                 })
                 return res.status(200).json({
-                    message: 'User logged!',
+                    message: 'Авторизация успешна!',
                     success: true,
                     user: {
                         _id: user._id,
@@ -52,11 +54,11 @@ class UserController {
 
             if( !login || !email || !password) return res.status(500).json({message: 'Missing some credential!'})
 
-            const existEmail =  await User.find({email})
-            if (existEmail == true) return res.status(500).json({message: 'User with same email is exist!'})
+            const existEmail =  await User.findOne({email})
+            if (existEmail) return res.status(500).json({message: 'Пользователь с таким email существует!',success: false})
 
-            const existLogin = await User.find({login})
-            if (existLogin === true) return res.status(500).json({message: 'User with same login is exist!'})
+            const existLogin = await User.findOne({login})
+            if (existLogin) return res.status(500).json({message: 'Логин уже занят!',success: false})
 
 
             const salt = await bcrypt.genSalt(3)
@@ -70,10 +72,7 @@ class UserController {
             if (user && newChannel) {
                 return res.status(200).json({
                     success: true,
-                    message: 'User was registered! New channel was created!',    
-                    user,
-                    channel: newChannel,
-                    token
+                    message: 'Пользователь успешно зарегестрирован. Авторизуйтесь!'
                 })
             }
             
@@ -107,7 +106,7 @@ class UserController {
             const myChannel = await Channel.findOne({author: req.user._id})
 
             if(!myChannel) res.status(404).json({message: 'Ваш персональный канал не найдет'})
-
+            console.log(req.user)
             res.status(200).json({
                 success: true,
                 message: 'New token generated!',
@@ -192,6 +191,46 @@ class UserController {
             return res.status(404).json({
                 message: e.message,
                 success: false
+            })
+        }
+    }
+
+    async updateUserProfile(req,res){
+        try {
+            const user = await User.findByIdAndUpdate(req.user._id,req.body)
+            const updatedUser = await User.findById(req.user._id).select('-password -__v').populate({path: 'subscriptions', select: '_id name avatar'})
+           
+            
+            return res.json({
+                success: true,
+                message:'Профиль успешно обновлен!',
+                updatedUser
+            })
+        } catch (e) {
+            console.error(e.message)
+
+            return res.status(404).json({
+                message: e.message
+            })
+        }
+    }
+
+    async getMyLikesAndDislikes(req,res){
+        try {
+            const user = await User.findById({_id: req.user._id})
+
+            return res.status(200).json({
+                success: true,
+                message:'Лайки получены успешно!',
+                likes: user.likes,
+                dislikes: user.dislikes
+            })
+        } catch (e) {
+            console.log(e.message)
+
+            return res.status(500).json({
+                message: 'Ошбика',
+                errror: e.message
             })
         }
     }

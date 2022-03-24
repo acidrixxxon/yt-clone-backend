@@ -18,9 +18,16 @@ const protect = async (req,res,next) => {
 
             next()
         } catch (error) {
-            console.error(error)
-            throw new Error(error)
+            console.error(error.message)
+            throw new Error(error.message)
         }
+    } else {
+        console.error('Запрос без токена!')
+        
+        return res.status(401).json({
+            success: false,
+            message: 'No token!'
+        })
     }
 }
 

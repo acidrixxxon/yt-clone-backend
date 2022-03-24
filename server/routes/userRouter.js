@@ -11,6 +11,8 @@ router.get('/me',protect,UserCtrl.getMe)
 router.get('/watchlater/:id/add',protect,UserCtrl.addWatchLater)
 router.get('/watchlater/:id/remove',protect,UserCtrl.removeWatchLater)
 router.get('/watchlater',protect,UserCtrl.getWatchLater)
+router.post('/updateprofile',protect,UserCtrl.updateUserProfile)
+router.get('/getlikesdislikes',protect,UserCtrl.getMyLikesAndDislikes)
 
 
 export default router

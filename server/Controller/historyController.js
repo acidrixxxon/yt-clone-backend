@@ -34,9 +34,11 @@ class HistoryController {
 
     async getHistory (req,res) {
         try {
-            const history = await History.findOne(req.user._id).populate({path: 'history',select: '-__v -updatedAt',populate: {path: 'channel',select: '-__v -subscribers -avatar -author'}})
+            const history = await History.findOne({user: req.user._id}).populate({path: 'history',select: '-__v -updatedAt',populate: {path: 'channel',select: '-__v -subscribers -avatar -author'}})
 
-            return res.status(200).json({
+            if (history) return res.status(200).json({
+                message: 'История получена успешно!',
+                success: true,
                 history
             })
         } catch (e) {
@@ -49,7 +51,7 @@ class HistoryController {
         try {
             const { id } = req.params
 
-            const history = await History.findOne(req.user._id)
+            const history = await History.findOne({user: req.user._id})
 
             if (!history) return res.status(404).json({
                 success: false,
